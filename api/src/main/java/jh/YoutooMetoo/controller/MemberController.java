@@ -1,27 +1,39 @@
 package jh.YoutooMetoo.controller;
 
 
-import jh.YoutooMetoo.repository.MemberRepository;
+import jh.YoutooMetoo.domain.Member;
+import jh.YoutooMetoo.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
-@RequestMapping("member")
+@RequestMapping("members")
 @RequiredArgsConstructor
 public class MemberController {
 
+    private final MemberService memberService;
 
-    private final MemberRepository memberRepository;
-
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<?> getMemberList(){
-
-
-        return new ResponseEntity<>(HttpStatus.OK);
-
+        return new ResponseEntity<>(memberService.findAllMember(),HttpStatus.OK);
     }
+
+    @PostMapping("")
+    public ResponseEntity<?> saveMember(@RequestBody String memberName) {
+        Member newMember = new Member();
+        newMember.setMemberName(memberName);
+        return new ResponseEntity<>(memberService.registerMember(newMember), HttpStatus.OK);
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<?> deleteMember(@RequestBody long memberId){
+        memberService.deleteMemberById(memberId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }
