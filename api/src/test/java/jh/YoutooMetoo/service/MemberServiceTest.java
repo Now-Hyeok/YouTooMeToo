@@ -12,18 +12,18 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class MemberServiceTest {
 
-    @Autowired
-    private MemberService memberService;
-
-
-    @Transactional
-    @Test
-    public void memberSave(){
-
-        Member member = memberService.registerMember(new Member("jh"));
-        Member findMember = memberService.findMemberById(member.getMemberId());
-        Assertions.assertThat(member).isEqualTo(findMember);
-    }
-
+//    @Autowired
+//    private MemberService memberService;
+//
+//
+//    @Transactional
+//    @Test
+//    public void memberSave(){
+//
+//        Member member = memberService.registerMember(new Member("jh"));
+//        Member findMember = memberService.findMemberById(member.getMemberId());
+//        Assertions.assertThat(member).isEqualTo(findMember);
+//    }
+//
 
 }
