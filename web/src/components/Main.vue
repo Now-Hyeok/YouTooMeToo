@@ -1,63 +1,51 @@
-
 <template>
-
-  <h1> 너도나도 소모임 멤버 출석 관리</h1>
-
-  <div>
-      <el-table
-      ref="multipleTable"
-      :data="memberList"
-      style="width: 100%"
-      @selection-change="handleSelectionChange">
-      <el-table-column
-        type="selection"
-        width="55">
-      </el-table-column>
-      <el-table-column
-        property="name"
-        label="Name"
-        width="120">
-      </el-table-column>
-    </el-table>
-    <div style="margin-top: 20px">
-      <el-button @click="toggleSelection()">Clear selection</el-button>
-    </div>
-  </div>
-
-
-  <el-button type="primary">회원 추가</el-button>
+  <el-container>
+    <el-header>
+      <h1>너도 나도 회원 출석 관리</h1>
+    </el-header>
+    <el-tabs type="card" class="main-tab">
+      <el-tab-pane label="회원관리">
+        <Member />
+      </el-tab-pane>
+      <el-tab-pane label="주간">
+        <Weekly />
+      </el-tab-pane>
+      <el-tab-pane label="월간">
+        <Monthly />
+      </el-tab-pane>
+      <el-tab-pane label="total">
+        <Total />
+      </el-tab-pane>
+    </el-tabs>
+  </el-container>
 </template>
 
-<script>
-import {onMounted, ref} from 'vue'
-
-export default {
-  setup(){
-
-    const memberList = ref([{"name":"김경호"},{"name":"윤남현"},{"name":"이찬희"}]);
-
-    const toggleSelection = (rows)=> {
-        if (rows) {
-          rows.forEach(row => {
-            this.$refs.multipleTable.toggleRowSelection(row);
-          });
-        } else {
-          this.$refs.multipleTable.clearSelection();
-        }
-      }
-
-    const handleSelectionChange  = (val)=> {
-        this.multipleSelection = val;
-      }
-    return{
-      memberList,
-      handleSelectionChange,
-      toggleSelection
-    }
-  }
-}
+<script setup>
+import Member from './Member.vue';
+import Weekly from './Weekly.vue';
+import Monthly from './Monthly.vue';
+import Total from './Total.vue';
 </script>
 
 <style>
-
+.main-tab {
+  height: 100%;
+}
+.main-tab .el-tabs__item:hover {
+  color: #000000;
+  cursor: pointer;
+}
+.main-tab .el-tabs__header .el-tabs__item {
+  font-family: 'NanumSquare', sans-serif;
+  font-size: 15px;
+}
+.main-tab .el-tabs__header .el-tabs__item.is-active {
+  background-color: #1a8084;
+  color: white;
+}
+.main-tab .el-tabs__header {
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
 </style>

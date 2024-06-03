@@ -1,6 +1,9 @@
 package jh.YoutooMetoo.service;
 
+import jakarta.transaction.Transactional;
+import jh.YoutooMetoo.domain.Attendance;
 import jh.YoutooMetoo.domain.Member;
+import jh.YoutooMetoo.repository.AttendanceRepository;
 import jh.YoutooMetoo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,24 +16,29 @@ import java.util.Optional;
 public class MemberService {
 
 
-    private final MemberRepository repository;
+    private final MemberRepository memberRepository;
+    private final AttendanceRepository attendanceRepository;
     public Member registerMember(Member member){
-        return repository.save(member);
+        return memberRepository.save(member);
     }
 
     public List<Member> findAllMember(){
-        return repository.findAll();
+        return memberRepository.findAll();
     }
 
     public void updateMemberName(Long memberId, String name) {
-        Member findMember = repository.findById(memberId).orElseThrow();
+        Member findMember = memberRepository.findById(memberId).orElseThrow();
         findMember.setMemberName(name);
     }
 
+    @Transactional
     public void deleteMemberById(Long memberId) {
-        repository.deleteById(memberId);
-
+        memberRepository.deleteById(memberId);
+        attendanceRepository.deleteAllByMemberId(memberId);
     }
 
+    public Member findMemberById(Long memberId){
+        return memberRepository.findById(memberId).orElseThrow();
+    }
 
 }
