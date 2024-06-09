@@ -25,6 +25,8 @@ import Member from './Member.vue';
 import Weekly from './Weekly.vue';
 import Monthly from './Monthly.vue';
 import Total from './Total.vue';
+
+
 </script>
 
 <style>

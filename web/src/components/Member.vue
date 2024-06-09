@@ -3,7 +3,7 @@
       <el-row>
         <el-table :data="memberList" @selection-change="handleSelectionChange" ref="multipleTable">
           <el-table-column type="selection"></el-table-column>
-          <el-table-column prop="memberName" label="Member Name"></el-table-column>
+          <el-table-column prop="memberName" label="이름"></el-table-column>
         </el-table>
       </el-row>
 
@@ -28,16 +28,17 @@
   <script setup>
   import { onMounted, ref } from 'vue';
   import * as memberApiService from '../service/memberApiService';
-  
-  const memberList = ref([]);
+
   const multipleSelection = ref([]);
   const multipleTable = ref(null);
   const newMemberName = ref();
-  
+  const memberList = ref([]);
+
   const getMemberList = async () => {
     let response = await memberApiService.getMemberList();
     if (response.status === 200) {
       memberList.value = response.data;
+
     }
   };
   

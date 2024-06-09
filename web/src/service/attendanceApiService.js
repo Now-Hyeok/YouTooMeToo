@@ -3,15 +3,24 @@ import apiClient from "./apiService";
 
 let prefixUrl = "/attendance";
 
-export default{
-    async attendance(){
-        let result = undefined;
-        await apiClient.post(prefixUrl,data)
-        .then(response => {
-            result = response;
-        }).catch(error => {
-            result = error;
-        });
-        return result;
+
+const updateAttendance = async (data)=>{
+    try {
+        const response = await apiClient.post(prefixUrl+"/updateAttendance",data)
+        return response;
+    } catch (error) {
+        return error;
+    }
+
+}
+
+const getAttendanceList = async () =>{
+    try {
+        const response = await apiClient.get(prefixUrl)
+        return response;
+    } catch (error) {
+        return error;
     }
 }
+
+export {updateAttendance,getAttendanceList}
