@@ -1,7 +1,7 @@
 <template>
     <div class="member-container">
       <el-row>
-        <el-table :data="memberList" @selection-change="handleSelectionChange" ref="multipleTable">
+        <el-table :data="store.getMemberList" @selection-change="handleSelectionChange" ref="multipleTable">
           <el-table-column type="selection"></el-table-column>
           <el-table-column prop="memberName" label="이름"></el-table-column>
         </el-table>
@@ -28,25 +28,18 @@
   <script setup>
   import { onMounted, ref } from 'vue';
   import * as memberApiService from '../service/memberApiService';
+  import { memberStore } from '../store';
 
   const multipleSelection = ref([]);
   const multipleTable = ref(null);
   const newMemberName = ref();
-  const memberList = ref([]);
+  const store = memberStore();
 
-  const getMemberList = async () => {
-    let response = await memberApiService.getMemberList();
-    if (response.status === 200) {
-      memberList.value = response.data;
-
-    }
-  };
-  
   const deleteSelectedMember = async () => {
     let data = multipleSelection.value;
     let response = await memberApiService.deleteMember(data);
     if (response.status===200){
-        getMemberList();
+        store.updateMemberList();
         clearSelection();
     }
     // Implement the deletion logic here
@@ -61,7 +54,8 @@
     }
     let response = await memberApiService.registerMember(data);
     if(response.status===200){
-        getMemberList();
+      store.updateMemberList();
+
 
     }else{
         alert("회원 등록 실패");
@@ -81,7 +75,8 @@
   };
   
   onMounted(() => {
-    getMemberList();
+    store.updateMemberList();
+
   });
   </script>
   

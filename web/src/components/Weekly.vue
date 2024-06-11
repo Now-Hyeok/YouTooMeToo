@@ -1,74 +1,63 @@
 <template>
-  <el-table :data="memberList">
+  <el-table :data="store.getMemberListWithAttendance">
     <el-table-column prop="memberName" label="회원명"/>
 
     <el-table-column label="주간출결여부">
       <el-table-column
-        v-for="(date, index) in week" 
+        v-for="(dateInfo, index) in week" 
         :key="index" 
-        :label="date"
-        >
+        :label="`${dateInfo.dayOfWeek} (${dateInfo.date})`"
+      >
         <template #default="{ row }">
           <el-button 
-            :type="row.attendance[date] ? 'success' : 'danger'"
-            @click="toggleAttendance(row, date)"
+            :type="row.attendance[dateInfo.date] ? 'success' : 'danger'"
+            @click="toggleAttendance(row, dateInfo.date)"
           >
-            {{ row.attendance[date] ? '출석' : '불출석' }}
+            {{ row.attendance[dateInfo.date] ? '앙 출석 띠' : '힝 불참 띠 ㅜㅜ ' }}
           </el-button>
         </template>
       </el-table-column>
     </el-table-column>
+
+    <el-table-column
+      fixed="right"
+      label="출석횟수"
+      width="120">
+      <template #default="{ row }">
+        {{ calculateAttendanceCount(row.attendance) }}
+      </template>
+    </el-table-column>
+
   </el-table>
 </template>
-
 <script setup>
 import * as memberApiService from '../service/memberApiService';
 import * as attendanceApiService from '../service/attendanceApiService';
 import {ref, onMounted} from 'vue';
+import { memberStore } from '../store';
+
+const calculateAttendanceCount = (attendance) => {
+  return Object.values(attendance).filter(Boolean).length;
+};
+
 
 const today = ref(null);
 const week = ref();
-
+const store = memberStore();
+const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토'];
 const getCurrentWeek = () => {
   const day = new Date();
   const sunday = day.getTime() - 86400000 * day.getDay();
   day.setTime(sunday);
 
-  const result = [day.toISOString().slice(0,10)];
+  const result = [{ date: day.toISOString().slice(0, 10), dayOfWeek: WEEKDAY[day.getDay()] }];
 
-  for(let i=1; i<7; i++){
+  for(let i = 1; i < 7; i++){
     day.setTime(day.getTime() + 86400000);
-    result.push(day.toISOString().slice(0,10));
+    result.push({ date: day.toISOString().slice(0, 10), dayOfWeek: WEEKDAY[day.getDay()] });
   }
 
   return result;
-}
-
-const memberList = ref([]);
-
-const getMemberList = async () => {
-  let response = await memberApiService.getMemberList();
-  if (response.status === 200) {
-    // 멤버 데이터를 가져온 후 출석 상태 초기화
-    memberList.value = response.data.map(member => ({
-      ...member,
-      attendance: week.value.reduce((acc, date) => {
-        acc[date] = false;
-        return acc;
-      }, {})
-    }));
-
-    // 출석 데이터를 가져와서 각 멤버의 출석 상태를 업데이트
-    let attendanceResponse = await attendanceApiService.getAttendanceList();
-    if (attendanceResponse.status === 200) {
-      attendanceResponse.data.forEach(attendance => {
-        let member = memberList.value.find(m => m.memberId === attendance.memberId);
-        if (member) {
-          member.attendance[attendance.attendanceDate] = true;
-        }
-      });
-    }
-  }
 };
 
 const toggleAttendance = async (member, date) => {
@@ -86,7 +75,7 @@ const toggleAttendance = async (member, date) => {
 };
 
 onMounted(()=>{
-  getMemberList();
+store.updateMemberListWithAttendance();
   today.value = new Date();
   week.value = getCurrentWeek();
 });
